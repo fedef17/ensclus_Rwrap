@@ -1,0 +1,153 @@
+Input file for mainCLUStool.py.
+
+IMPORTANT NOTE: the value of the keys has to be written in the line that immediately follows the [key] label. If you don't want to set a key, comment it with a '#': #[key]. Commented lines are not considered.
+
+##################################################################
+##################### REQUIRED INPUT PATHS/NAMES (have to be set!) #################
+
+# General output data directory (a subfolder is built for each run)
+[dir_OUTPUT]
+/home/fabiano/Research/lavori/MedscopeEnsClus/
+
+# Directory that contains all files to be analized
+[INPUT_PATH]
+/data-hobbes/fabiano/temp/
+
+############################### How to read ensemble members? ###################################
+
+# Multiple files, one per each ensemble member (True) or single file with multiple members (False)?
+[single_file_member]
+True
+
+# If [single_file_member] is False. Dimension in the netcdf file in which the ensemble members are stored. Defaults to level or lev.
+[ens_dimension_netcdf]
+lev
+
+# If [single_file_member] is True: common string to all file_names to be analized inside INPUT_PATH. If not specified all files in the directory will be considered.
+# If [single_file_member] is False: name of the single file to be considered.
+[genfilenames]
+tas_2011_m11_ens000*.nc
+
+###########################
+
+# Name of this run
+[exp_name]
+test_rebuild
+
+# Season to be selected (options: JJA, DJFM, DJ,...). The code accepts also single months, named in this way: Jan, Feb, Mar, ...
+[season]
+DJF
+
+# Overwrite output files if already present in the same folder? (if not sure, leave this as False)
+[overwrite_output]
+True
+
+##########################################################################
+##############  reference FILES  ################
+
+# Compare with the model climatology?
+#[clim_compare]
+True
+
+# File that contains the model climatology.
+#[climat_file]
+/home/fabiano/DATA/Medscope/seasonal_forecasts_1d5/input_par167_1ens/climatology_mean_nov_1993-2016.nc
+
+# File that contains the model climatology variance (std). If specified, the anomalies are plotted also in units of model sigma.
+#[climat_std]
+/home/fabiano/DATA/Medscope/seasonal_forecasts_1d5/input_par167_1ens/climatology_std_nov_1993-2016.nc
+
+# Sigma of the model. If the climat_std file is specified, there is no need to set this key. Or, it is better not to.
+#[clim_sigma_value]
+#7.0
+
+# Compare with Observations?
+#[obs_compare]
+True
+
+# Observation file. Anomalies with respect to the observed climatology.
+#[obs_file]
+/home/fabiano/DATA/Medscope/ERAInterim_1d5/ERAInterim_anomalies_167_grid150.nc
+
+##########################################################################
+##############  options for EOFs/CLUSTERING  ################
+
+# Number of EOFs to be used in the decomposition:
+[numpcs]
+4
+
+# Percentage of variance explained by the EOFs considered. Number of EOFs used in the decomposition is calculated by program.
+[perc]
+80
+
+# Consider [perc] (True) or [numpcs] (False)?
+[flag_perc]
+False
+
+# Number of clusters to be used:
+[numclus]
+4
+
+# Try to determine the best number of clusters according to Dunn and Davies-Bouldin indexes? (If True, a plot of the various indexes is produced, but no final maps)
+[check_best_numclus]
+False
+
+##########################################################################
+############## Options for the analysis ################
+
+# Regional average ('EAT': Euro-Atlantic, 'PNA': Pacific North American, 'NH': Northern Hemisphere, 'Med': Mediterranean, 'Eu': Europe)
+# Area to be selected
+[area]
+Med
+
+# Data frequency (options: day, month)
+[timestep]
+month
+
+# Type of pattern to consider. The choice is between: '**th_percentile', 'mean', 'maximum', 'std', 'trend'. For the percentile, the actual number has to be specified in the key value: if the 75th percentile is desired, the right key is '75th_percentile'.
+[extreme]
+mean
+
+##########################################################################
+###################  Options for plots and visualization  ###################
+
+# Format of saved figures: (pdf or eps)
+[fig_format]
+pdf
+
+# Number of color levels to be used in the contour plots.
+[n_color_levels]
+21
+
+# Calibrate the color scale on the observed anomaly? (True gives true rendering of the observed/modeled difference, but may hide the difference between clusters if the observed anomaly is much larger.)
+[fig_ref_to_obs]
+False
+
+# Draw contour lines?
+[draw_contour_lines]
+False
+
+# Number of levels to be used for the contour lines.
+[n_levels]
+5
+
+# Colormap used for the contour plots.
+[cmap]
+RdBu_r
+
+# Colormap used for the cluster colors.
+[cmap_cluster]
+nipy_spectral
+
+
+# Label for the colorbar.
+[cb_label]
+Temperature anomaly (K)
+
+# Max number of ens. member plotted in the same figure:
+[max_ens_in_fig]
+30
+
+# Use numbers to label points in the Taylor plots.
+[taylor_w_numbers]
+True
