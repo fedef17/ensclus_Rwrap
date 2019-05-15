@@ -934,9 +934,9 @@ def ens_anom(inputs, var_ens_tot, lat, lon, dates):
         # Reshape grid to 2D (time, lat*lon)  -> Y
         #Y=[var_ens[i].reshape(var_ens[0].shape[0],var_ens[0].shape[1]*var_ens[0].shape[2])for i in range(numens)]
         #print('Reshaped (time, lat*lon) variable: ',Y[0].shape)
-        trendmap=np.empty((var_ens[0].shape[1],var_ens[0].shape[2]))
         trendmap_ens=[]
         for i in range(numens):
+            trendmap=np.empty((var_ens[0].shape[1],var_ens[0].shape[2]))
             for la in range(var_ens[0].shape[1]):
                 for lo in range(var_ens[0].shape[2]):
                     slope, intercept, r_value, p_value, std_err = stats.linregress(range(var_ens[0].shape[0]),var_ens[i][:,la,lo])
