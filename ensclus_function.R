@@ -1,4 +1,4 @@
-source("basis_functions.R")
+source("basis_functions_mod.R")
 library(reticulate)
 
 check.condaenv.ensclus <- function() {
@@ -58,7 +58,7 @@ ensclus <- function(var_ens, lat, lon, dates, numclus = 4, dir_OUTPUT = './', ex
 }
 
 # EnsClus function
-ensclus_Raw <- function(var_ens, lat, lon, numclus = 4, lon_lim = NULL, lat_lim = NULL, perc = 80, numpcs = 4, flag_perc = FALSE) {
+ensclus_Raw <- function(var_ens, lat, lon, numclus = 4, lon_lim = NULL, lat_lim = NULL, perc_explained = 80, numpcs = 4, flag_perc = FALSE) {
 	# dim(var_ens) = lon, lat, n_ens !!!!!
 	if (length(lat) != dim(var_ens)[3]) {
 		print('INCORRECT LAT length')
@@ -80,37 +80,31 @@ ensclus_Raw <- function(var_ens, lat, lon, numclus = 4, lon_lim = NULL, lat_lim 
 	}
 
 	gigi = aperm(var_anom, c(2,3,1)) # reshaping to give the right input to regimes function
-	clusters = regimes(lon, lat, gigi, ncluster = numclus, ntime = 1000, neof = numpcs, lon_lim, lat_lim, flag_perc = flag_perc, perc = perc)
+	clusters = regimes(lon, lat, gigi, ncluster = numclus, ntime = 1000, neof = numpcs, lon_lim, lat_lim, flag_perc = flag_perc, perc = perc_explained, max_eofs = n_ens-1)
 
 	clus_labels = as.array(clusters$cluster)
 	frequencies = as.array(clusters$frequencies)
 
 	clus_centers = clusters$clus_centers
-	pcs = clusters$pcs
 
 	closest_member = array(dim = numclus)
 	dist_closest_member = array(dim = numclus)
 	for (iclu in seq(1,numclus)) {
-		print(iclu)
 		this_clus_labels = which(clus_labels == iclu)
-		print(pcs[clus_labels == iclu,])
-		dist_arr = apply(pcs[clus_labels == iclu,], 1, dist_from_center, center = clus_centers[iclu,])
+		dist_arr = apply(clusters$pcs[clus_labels == iclu,], 1, dist_from_center, center = clus_centers[iclu,])
+		# print(clusters$pcs[clus_labels == iclu,1])
+		# print(clus_centers[iclu,1])
+		print(paste0("distance from cluster ",iclu," center:"))
 		print(this_clus_labels)
 		print(dist_arr)
 		closest_member[iclu] = this_clus_labels[which.min(dist_arr)]
 		dist_closest_member[iclu] = min(dist_arr)
+		print(paste0("closest member to cluster ", iclu, " center is: ", closest_member[iclu]))
 	}
 
-	# clus_mean = array(dim=c(lon, lat, numclus))
-	# for (iclu in seq(1,numclus)) {
-	# 	 clus_mean[,,iclu] = apply(var_ens[,,clus_labels == iclu], c(1,2), mean)
-	# }
-
-
-	print("Finalize...")
-	#out = list(labels=clus_labels, freq=frequencies, pcs=pcs, centers= clus_centers, closest_member = closest_member, dist_closest_member = dist_closest_member)
-	out = list(labels=clus_labels, freq=frequencies, closest_member = closest_member, dist_closest_member = dist_closest_member)
+	print("EnsClus completed...")
+	out = list(labels = clus_labels, freq = frequencies, closest_member = closest_member, clus_repr_field = var_ens[closest_member,,], clus_composites = clusters$regimes)
+	# out = list(labels = clus_labels, freq = frequencies, closest_member = closest_member, repr_field = var_ens[,,closest_member], clus_centers = clus_centers, pcs = clusters$pcs)
 
 	return(out)
-	#return(out)
 }

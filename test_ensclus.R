@@ -9,11 +9,11 @@ library(stringr)
 cart = "/home/fedefab/Scrivania/Research/Post-doc/data_temp/"
 
 n_field = 25
-filename = paste0(cart,"tas_2011_m11_ens",str_pad(1,6,pad='0'),"_15deg.nc")
+filename = paste0(cart,"tas_2011_m11_ens",str_pad(1,6,pad='0'),".nc")#_15deg.nc")
 field = ncdf.opener.universal(filename, namevar = "tas")
 field_arr = array(dim=c(n_field,dim(field$field)))
 for (k in seq(1, n_field, 1)) {
-  filename = paste0(cart,"tas_2011_m11_ens",str_pad(k,6,pad='0'),"_15deg.nc")
+  filename = paste0(cart,"tas_2011_m11_ens",str_pad(k,6,pad='0'),".nc")#_15deg.nc")
   field = ncdf.opener.universal(filename, namevar = "tas")
   field_arr[k,,,] = field$field
 }
@@ -28,8 +28,14 @@ gigi = apply(field_arr[,,,2:4],c(1,2,3),mean)
 lat_lim = c(30, 87.5)
 lon_lim = c(-80, 40)
 
-resu = ensclus_Raw(gigi, lat, lon, numclus = 4, lon_lim = lon_lim, lat_lim = lat_lim, perc = 80, numpcs = 4, flag_perc = FALSE)
+print('Using numpcs')
+resu1 = ensclus_Raw(gigi, lat, lon, numclus = 4, lon_lim = lon_lim, lat_lim = lat_lim, numpcs = 4)
 
+print('Using perc explained')
+resu2 = ensclus_Raw(gigi, lat, lon, numclus = 4, lon_lim = lon_lim, lat_lim = lat_lim, perc_explained = 60, flag_perc = TRUE)
+
+print(resu1$closest_member)
+print(resu2$closest_member)
 
 # print(dates)
 # out = ensclus(field_arr, lat, lon, dates, area = 'EAT', season = 'DJF', dir_OUTPUT = '/home/fedefab/Scrivania/Research/Post-doc/code_outputs/') #, time)
